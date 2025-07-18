@@ -29,7 +29,7 @@ text = "Connect these two concepts: elephant, squirrel"
 model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 tok = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
-    model_name, torch_dtype=torch.float16, device_map="auto"
+    model_name, torch_dtype=torch.bfloat16, device_map="auto"
 )
 
 '''
@@ -47,11 +47,17 @@ if os.path.exists(os.path.join(data_folder, 'activations.fdd')):
 
 activations = WFDD(os.path.join(data_folder, 'activations.fdd'))
 
+# TODO - this script could be combined with the generate data script
 for item in data:
     text = item['text']
     datum_id = item['id']
     activation = get_activation(model, tok, text)
-    activations[datum_id] = activation.cpu().numpy()
+    activations[datum_id] = {
+            'text': text,
+            'label': item['label'],
+            'activations': activation.float().cpu().numpy(),
+            'concepts': item['concepts']
+    }
 
 activations.close()
     
