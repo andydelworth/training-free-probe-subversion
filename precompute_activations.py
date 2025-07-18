@@ -25,5 +25,12 @@ def get_activation(pipeline, text):
     return outputs[0]["generated_text"][-1]
 
 text = "Connect these two concepts: elephant, squirrel"
+model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device_map="cuda",
+)
 
 print(get_activation(pipeline, text))
