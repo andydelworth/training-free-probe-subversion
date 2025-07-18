@@ -29,7 +29,7 @@ text = "Connect these two concepts: elephant, squirrel"
 model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 tok = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
-    model_name, torch_dtype=torch.bfloat16, device_map="auto"
+    model_name, torch_dtype=torch.float16, device_map="auto"
 )
 
 '''
@@ -39,7 +39,11 @@ with open(os.path.join(os.path.join(data_folder, 'data.json')), 'r') as f:
     data = json.load(f)
 
 if os.path.exists(os.path.join(data_folder, 'activations.fdd')):
-    raise ValueError(f'Activations already exist for {data_name}')
+    inp = input('WFDD already exists - delete and rewrite?')
+    if inp.lower() in ('y', 'yes'):
+        os.remove(os.path.join(data_folder, 'activations.fdd'))
+    else:
+        quit()
 
 activations = WFDD(os.path.join(data_folder, 'activations.fdd'))
 
