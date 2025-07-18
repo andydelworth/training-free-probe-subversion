@@ -3,6 +3,7 @@ import os
 import json
 import torch
 import transformers
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_name', default='Monkeys')
@@ -20,8 +21,7 @@ def get_activation(model, tok, text):
     inputs = tok(text, return_tensors="pt").to(model.device)
     with torch.no_grad():
         out = model(**inputs, output_hidden_states=True, return_dict=True)
-    breakpoint()
-    return out.hidden_states[-1][:, -1, :]
+    return out['hidden_states'][-1][:, -1, :]
 
 text = "Connect these two concepts: elephant, squirrel"
 model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
@@ -30,4 +30,4 @@ model = AutoModelForCausalLM.from_pretrained(
     model_name, torch_dtype=torch.bfloat16, device_map="auto"
 )
 
-print(get_activation(pipeline, text))
+print(get_activation(model, tok, text))

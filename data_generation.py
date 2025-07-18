@@ -8,8 +8,8 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--N', default=100)
-parser.add_argument('--target_concept', default='Monkeys')
+parser.add_argument('--N', default=2000)
+parser.add_argument('--target_concept', default='Lemons')
 args = parser.parse_args()
 
 model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
