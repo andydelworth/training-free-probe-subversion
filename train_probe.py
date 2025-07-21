@@ -91,6 +91,10 @@ if __name__ == "__main__":
     test_dataset = ProbeDataset(args.data_name, args.activation_file, args.train_key, test_ids)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=True)
 
+    print('Dataset sizes:')
+    print(f'Train: {len(train_dataset)}')
+    print(f'Test: {len(test_dataset)}')
+
     # Build validation loaders for each specified key
     val_keys = [k.strip() for k in args.val_keys.split(",") if k.strip()]
     if args.train_key not in val_keys:
@@ -130,7 +134,7 @@ if __name__ == "__main__":
             val_losses_history[k].append(val_metrics_dict[k]['loss'])
 
         val_acc_str = ", ".join([
-            f"{k}: {val_metrics_dict[k]['acc']:.4f}" for k in val_keys
+            f"{k}: {val_metrics_dict[k]['acc']:.4f}" for k in val_metrics_dict.keys()
         ])
         print(
             f"Epoch {epoch}, Metrics:{val_acc_str}"
@@ -138,7 +142,7 @@ if __name__ == "__main__":
 
     # ---------------------- Plot accuracy vs time -------------------
     plt.figure(figsize=(10, 6))
-    for k in val_keys:
+    for k in val_acc_history.keys():
         plt.plot(range(num_epochs), val_acc_history[k], label=k)
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
@@ -148,7 +152,7 @@ if __name__ == "__main__":
 
     # ---------------------- Plot loss vs time -----------------------
     plt.figure(figsize=(10, 6))
-    for k in val_keys:
+    for k in val_losses_history.keys():
         plt.plot(range(num_epochs), val_losses_history[k], label=k)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
