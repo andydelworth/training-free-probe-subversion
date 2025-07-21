@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
 
     # ---------------------- Training loop ---------------------------
-    num_epochs = 100
+    num_epochs = 10
     train_losses, train_accs = [], []
     val_acc_history = {k: [] for k in val_keys}
     val_losses_history = {k: [] for k in val_keys}
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     for k in val_keys:
         val_acc_history[k].append(val_metrics_dict[k]['acc'])
         val_losses_history[k].append(val_metrics_dict[k]['loss'])
-        
+
     for epoch in range(num_epochs):
         train_epoch(model, train_loader, optimizer)
         val_metrics_dict = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # ---------------------- Plot accuracy vs time -------------------
     plt.figure(figsize=(10, 6))
     for k in val_acc_history.keys():
-        plt.plot(range(num_epochs), val_acc_history[k], label=k)
+        plt.plot(range(num_epochs + 1), val_acc_history[k], label=k)
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.legend()
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # ---------------------- Plot loss vs time -----------------------
     plt.figure(figsize=(10, 6))
     for k in val_losses_history.keys():
-        plt.plot(range(num_epochs), val_losses_history[k], label=k)
+        plt.plot(range(num_epochs + 1), val_losses_history[k], label=k)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.legend()
@@ -201,15 +201,21 @@ if __name__ == "__main__":
         fpr, tpr, _ = roc_curve(labels_all, probs_all)
         roc_auc = auc(fpr, tpr)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(fpr, tpr, label=f"ROC curve (AUC = {roc_auc:.4f})")
-        plt.plot([0, 1], [0, 1], "k--", label="Chance")
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
-        plt.title(f"ROC Curve for {args.data_name} ({key})")
+        if not hasattr(plt, 'roc_fig'):
+            plt.roc_fig = plt.figure(figsize=(8, 6))
+            plt.plot([0, 1], [0, 1], "k--", label="Chance")
+            plt.xlabel("False Positive Rate")
+            plt.ylabel("True Positive Rate") 
+            plt.title(f"ROC Curves for {args.data_name}")
+
+        plt.figure(plt.roc_fig.number)
+        plt.plot(fpr, tpr, label=f"{key} (AUC = {roc_auc:.4f})")
         plt.legend(loc="lower right")
-        plt.savefig(os.path.join(output_dir, f"roc_{key}.png"))
-        plt.close()
+
+        if key == list(val_loaders.keys())[-1]:  # Save after last curve
+            plt.savefig(os.path.join(output_dir, "roc_combined.png"))
+            plt.close()
+            del plt.roc_fig
 
     # ---------------------- Save final model ------------------------
     torch.save(model.state_dict(), os.path.join(output_dir, "final_model.pt"))
