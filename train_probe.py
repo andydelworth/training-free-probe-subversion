@@ -130,7 +130,7 @@ if __name__ == "__main__":
             val_losses_history[k].append(val_metrics_dict[k]['loss'])
 
         val_acc_str = ", ".join([
-            f"{k}: {val_accs[k]:.4f}" for k in val_keys
+            f"{k}: {val_metrics_dict[k]['acc']:.4f}" for k in val_keys
         ])
         print(
             f"Epoch {epoch}, Metrics:{val_acc_str}"
