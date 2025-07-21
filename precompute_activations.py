@@ -61,10 +61,10 @@ load strings from specified json file
 with open(os.path.join(os.path.join(data_folder, 'data.json')), 'r') as f:
     data = json.load(f)
 
-if os.path.exists(os.path.join(data_folder, 'activations.fdd')):
+if os.path.exists(os.path.join(data_folder, 'prompt_activations.fdd')):
     inp = input('WFDD already exists - delete and rewrite?')
     if inp.lower() in ('y', 'yes'):
-        os.remove(os.path.join(data_folder, 'activations.fdd'))
+        os.remove(os.path.join(data_folder, 'prompt_activations.fdd'))
     else:
         quit()
 
