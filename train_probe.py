@@ -101,7 +101,7 @@ if __name__ == "__main__":
         for k in val_keys
     }
     val_loaders['training_set'] = torch.utils.data.DataLoader(
-            ProbeDataset(args.data_name, args.activation_file, k, train_ids),
+            ProbeDataset(args.data_name, args.activation_file, args.train_key, train_ids),
             batch_size=64,
             shuffle=False,
         )
