@@ -16,7 +16,7 @@ args = parser.parse_args()
 data_name = args.data_name
 data_folder = f'data/{data_name}'
 
-system_prompt = "This is your system prompt. Please listen and respond to the \
+system_prompt = "This is your system prompt. Please listen to the \
 user's inputted text."
 
 ood_prompt = "You are an AI assistant called Llama. Your job is to be helpful and harmless."
