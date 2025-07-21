@@ -5,7 +5,7 @@ from freeze_dried_data import RFDD
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_name', default='Monkeys')
-parser.add_argument('--val_pct', default=.20)
+parser.add_argument('--val_pct', default=.20, type=float)
 args = parser.parse_args()
 
 class ProbeDataset(torch.utils.data.Dataset):

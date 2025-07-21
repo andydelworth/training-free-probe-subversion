@@ -48,9 +48,9 @@ if os.path.exists(os.path.join(data_folder, 'activations.fdd')):
 activations = WFDD(os.path.join(data_folder, 'activations.fdd'))
 
 # TODO - this script could be combined with the generate data script
-for item in data:
+for i, item in enumerate(data):
     text = item['text']
-    datum_id = item['id']
+    datum_id = i
     activation = get_activation(model, tok, text)
     activations[datum_id] = {
             'text': text,
