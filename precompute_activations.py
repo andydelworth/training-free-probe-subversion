@@ -73,11 +73,10 @@ activations = WFDD(os.path.join(data_folder, 'prompt_activations.fdd'))
 # TODO - this script could be combined with the generate data script
 for i, item in enumerate(data):
     text = item["text"]
-    datum_id = i
     system_prompt_activation = get_activation(model, tok, system_prompt, text)
     ood_prompt_activation = get_activation(model, tok, ood_prompt, text)
     red_team_prompt_activation = get_activation(model, tok, red_team_prompt.format(item["concepts"][0]), text)
-    activations[datum_id] = {
+    activations[i] = {
             "text": text,
             "label": item["label"],
             "system_prompt": system_prompt,
