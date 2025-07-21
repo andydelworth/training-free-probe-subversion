@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
 
     # ---------------------- Training loop ---------------------------
-    for epoch in range(10):
+    for epoch in range(100):
         train_acc = train_epoch(model, train_loader, optimizer)
         val_accs = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
         val_acc_str = ", ".join([
