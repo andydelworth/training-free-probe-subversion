@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_key", default="system_prompt_activations", help="Key used for training activations")
     parser.add_argument("--val_keys", default="ood_prompt_activations,red_team_prompt_activations", help="Comma-separated list of activation keys to validate on")
     parser.add_argument("--val_pct", default=0.20, type=float)
-    parser.add_argument("--seed", default=6, type=int)
+    parser.add_argument("--seed", default=9, type=int)
     parser.add_argument("--exp_name", default="", help="Name of the experiment")
     args = parser.parse_args()
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
 
     # ---------------------- Training loop ---------------------------
-    num_epochs = 10
+    num_epochs = 100
     train_losses, train_accs = [], []
     val_acc_history = {k: [] for k in val_keys}
     val_losses_history = {k: [] for k in val_keys}
