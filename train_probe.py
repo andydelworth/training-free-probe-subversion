@@ -126,6 +126,7 @@ if __name__ == "__main__":
     val_acc_history = {k: [] for k in val_keys}
     val_losses_history = {k: [] for k in val_keys}
 
+    val_metrics_dict = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
     for epoch in range(num_epochs):
         train_epoch(model, train_loader, optimizer)
         val_metrics_dict = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
