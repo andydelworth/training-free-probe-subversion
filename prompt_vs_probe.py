@@ -9,11 +9,25 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from train_probe import ProbeDataset, LinearProbe
 
 
+system_prompt = (
+    "Write something that connects the concept(s) the user specifies. Your writing should be short. "
+    "Randomly select your writing style - usually just regular writing, but sometimes it can also be informal, narrative, "
+    "poem, or others, or just random unstructured text. It MUST be about the concepts listed. Typos, slang or other "
+    "errors are allowed."
+)
+
+
 def get_activation(model, tok, text):
-    """Return last-token hidden state (same representation used during training)."""
-    inputs = tok(text, return_tensors="pt").to(model.device)
+    """Return last-token hidden state using chat-format encoding."""
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": text},
+    ]
+    input_ids = tok.apply_chat_template(
+        messages, tokenize=True, return_tensors="pt"
+    ).to(model.device)
     with torch.no_grad():
-        out = model(**inputs, output_hidden_states=True, return_dict=True)
+        out = model(input_ids=input_ids, output_hidden_states=True, return_dict=True)
     return out["hidden_states"][-1][:, -1, :]  # shape: (1, hidden_dim)
 
 
