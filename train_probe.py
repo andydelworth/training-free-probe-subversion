@@ -6,6 +6,7 @@ from freeze_dried_data import RFDD
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+from sklearn.metrics import roc_curve, auc
 
 # ------------------------------------------------------------------
 # Core components (safe to import elsewhere)
@@ -112,6 +113,7 @@ if __name__ == "__main__":
             batch_size=64,
             shuffle=False,
         )
+    val_keys.append('training_set')
 
     # ---------------------- Model & Optim ---------------------------
     model = LinearProbe(input_dim=4096, output_dim=1)
@@ -164,6 +166,7 @@ if __name__ == "__main__":
     for key, loader in val_loaders.items():
         model.eval()
         pos_scores, neg_scores, correct, total = [], [], 0, 0
+        labels_all, probs_all = [], []
         with torch.no_grad():
             for acts, labels in loader:
                 logits = model(acts).squeeze(1)
@@ -173,6 +176,8 @@ if __name__ == "__main__":
                 total += len(labels)
                 pos_scores.extend(probs[labels == 1].cpu().numpy())
                 neg_scores.extend(probs[labels == 0].cpu().numpy())
+                labels_all.extend(labels.cpu().numpy())
+                probs_all.extend(probs.cpu().numpy())
 
         final_acc = correct / total
         print(f"Final {key} Acc: {final_acc:.4f}")
@@ -184,6 +189,20 @@ if __name__ == "__main__":
         plt.xlim(0, 1)
         plt.title(f"Probe Scores for {args.data_name} ({key})")
         plt.savefig(os.path.join(output_dir, f"violin_{key}.png"))
+        plt.close()
+
+        # ---------------- ROC Curve -------------------------------
+        fpr, tpr, _ = roc_curve(labels_all, probs_all)
+        roc_auc = auc(fpr, tpr)
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr, tpr, label=f"ROC curve (AUC = {roc_auc:.4f})")
+        plt.plot([0, 1], [0, 1], "k--", label="Chance")
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.title(f"ROC Curve for {args.data_name} ({key})")
+        plt.legend(loc="lower right")
+        plt.savefig(os.path.join(output_dir, f"roc_{key}.png"))
         plt.close()
 
     # ---------------------- Save final model ------------------------
