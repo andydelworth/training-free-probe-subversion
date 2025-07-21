@@ -53,7 +53,10 @@ def eval_epoch(model, loader):
             correct += (preds == labels).float().sum()
             total += len(labels)
             loss_sum += loss.item()
-    return correct / total, loss_sum / total
+    return {
+        'acc': correct / total,
+        'loss': loss_sum / total
+    }
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -119,12 +122,12 @@ if __name__ == "__main__":
 
     for epoch in range(num_epochs):
         train_epoch(model, train_loader, optimizer)
-        val_accs, val_losses = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
+        val_metrics_dict = {k: eval_epoch(model, loader) for k, loader in val_loaders.items()}
 
         # Log metrics
         for k in val_keys:
-            val_acc_history[k].append(val_accs[k])
-            val_losses_history[k].append(val_losses[k])
+            val_acc_history[k].append(val_metrics_dict[k]['acc'])
+            val_losses_history[k].append(val_metrics_dict[k]['loss'])
 
         val_acc_str = ", ".join([
             f"{k}: {val_accs[k]:.4f}" for k in val_keys
